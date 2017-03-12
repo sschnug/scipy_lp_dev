@@ -55,3 +55,8 @@ Evaluation and Plotting:
   - cvxopt's preprocessing
   - Mosek-based solving
   - scikit-umfpack: condition-number warnings
+- Memory & Time-limits appear in code, but are not implemented
+  
+ # Example output
+ 
+![0](http://i.imgur.com/xBYfmfQ.png)
