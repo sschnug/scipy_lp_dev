@@ -22,6 +22,9 @@ Core:
 MPS-Reading and Canonicalization:
   - cvxopt
 
+Data-collecting (SQL-based now):
+  - dataset
+
 Evaluation and Plotting:
   - matplotlib
   - seaborn

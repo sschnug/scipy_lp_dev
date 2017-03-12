@@ -1,5 +1,6 @@
 import os
 import time
+import dataset
 from constants import *
 from mps_reader_preprocessor import read_mps_preprocess
 from solvers import *
@@ -20,7 +21,8 @@ class Benchmark(object):
         self.cwd = os.getcwd()
         self.verbose = verbose
 
-        self.results = []
+        self.db = dataset.connect('sqlite:///results.db')
+        self.db_table = self.db['eval_big']
 
     def run(self):
         for instance_name in self.instance_names:
@@ -53,7 +55,11 @@ class Benchmark(object):
             valid_result = False
             if abs(obj - exp_obj) <= self.obj_tol:
                 valid_result = True
-            self.results.append((instance_name, solver, valid_result, time_used))
+            self.db_table.insert(dict(instance=instance_name,
+                                      solver=solver,
+                                      valid_result=valid_result,
+                                      time_used=time_used))
+            #self.results.append((instance_name, solver, valid_result, time_used))
 
         elif solver == 'linprog_ip':
             if self.verbose:
@@ -72,7 +78,11 @@ class Benchmark(object):
             valid_result = False
             if abs(obj - exp_obj) <= self.obj_tol:
                 valid_result = True
-            self.results.append((instance_name, solver, valid_result, time_used))
+            self.db_table.insert(dict(instance=instance_name,
+                                      solver=solver,
+                                      valid_result=valid_result,
+                                      time_used=time_used))
+            #self.results.append((instance_name, solver, valid_result, time_used))
 
 
         elif solver == 'cvxopt_conelp':
@@ -92,7 +102,11 @@ class Benchmark(object):
             valid_result = False
             if abs(obj - exp_obj) <= self.obj_tol:
                 valid_result = True
-            self.results.append((instance_name, solver, valid_result, time_used))
+            self.db_table.insert(dict(instance=instance_name,
+                                      solver=solver,
+                                      valid_result=valid_result,
+                                      time_used=time_used))
+            #self.results.append((instance_name, solver, valid_result, time_used))
 
         elif solver == 'cvxopt_mosek':
             if self.verbose:
@@ -111,7 +125,11 @@ class Benchmark(object):
             valid_result = False
             if abs(obj - exp_obj) <= self.obj_tol:
                 valid_result = True
-            self.results.append((instance_name, solver, valid_result, time_used))
+            self.db_table.insert(dict(instance=instance_name,
+                                      solver=solver,
+                                      valid_result=valid_result,
+                                      time_used=time_used))
+            #self.results.append((instance_name, solver, valid_result, time_used))
 
         elif solver == 'simpleIPM':
             if self.verbose:
@@ -130,17 +148,26 @@ class Benchmark(object):
             valid_result = False
             if abs(obj - exp_obj) <= self.obj_tol:
                 valid_result = True
-            self.results.append((instance_name, solver, valid_result, time_used))
-
+            self.db_table.insert(dict(instance=instance_name,
+                                      solver=solver,
+                                      valid_result=valid_result,
+                                      time_used=time_used))
+            #self.results.append((instance_name, solver, valid_result, time_used))
 
 """ Some benchmark-utils """
 all_ = list(NETLIB_INSTANCES_TO_BENCHMARK.keys())
+for i in all_:
+    try:
+        f = open(os.path.join(NETLIB_INSTANCES_PATH, i) + '.mps')
+    except:
+        print('Problem with: ', i)
+        assert False
 
 """ Run Benchmark """
 benchmark = Benchmark(all_, \
-                      ['linprog_simplex', 'linprog_ip', 'cvxopt_conelp', 'simpleIPM'])                     # no mosek for now
+                      ['linprog_simplex', 'linprog_ip'])                     # no mosek for now
 benchmark.run()
 
 """ Evaluation """
-df = data_wrangling(benchmark.results)
-plot_overview(df)
+# df = data_wrangling(benchmark.results)
+# plot_overview(df)
